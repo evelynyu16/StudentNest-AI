@@ -162,6 +162,11 @@ Never commit `.env.local` or share the server keys over chat.
 3. **SQL Editor → New query**: paste [`supabase/schema.sql`](supabase/schema.sql) and click **Run**. It creates the `tracker_items` and `profiles` tables with row-level security, so each student only sees their own data.
 4. **Authentication → Sign In / Providers**: keep **Email** on.
 5. **Authentication → URL Configuration**: set **Site URL** to your deployed URL and add `http://localhost:5173/**` and `https://<your-app>.vercel.app/**` to **Redirect URLs**.
+6. **Send sign-in emails from your own Gmail.** Supabase's built-in email service only delivers to members of your Supabase team, so other people never receive their sign-in link. To let anyone sign in:
+   - In the Gmail account (a dedicated one such as `yourapp@gmail.com` keeps your personal address private), turn on **2-Step Verification**, then create an app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
+   - **Authentication → Emails → SMTP Settings**: turn on **Custom SMTP** with host `smtp.gmail.com`, port `465`, the Gmail address as sender and username, and the app password as password. Sender name: `StudentNest`.
+   - **Authentication → Rate Limits**: raise **Rate limit for sending emails** to about 30 per hour.
+   - Gmail sends up to about 500 emails a day. Tell users to check their spam folder if the link doesn't arrive.
 
 Free projects pause after 7 days without use. Restore them from the Supabase dashboard before a demo.
 </details>
