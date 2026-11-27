@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AuthDialog } from "./components/AuthDialog";
 import { PasteDialog } from "./components/PasteDialog";
+import { GuideView } from "./components/GuideView";
 import { SearchView } from "./components/SearchView";
 import { TrackerView } from "./components/TrackerView";
 import { signOut, useAuth } from "./hooks/useAuth";
@@ -17,11 +18,13 @@ const schoolMsgFor = (s: School) => ({
   text: (s.located ? `Found ${s.label}. ` : "") + `Showing sample listings around ${s.short}. Paste listings you’ve found to add real ones.`,
 });
 
+const viewFromHash = () => location.hash === "#tracker" ? "tracker" : location.hash === "#guide" ? "guide" : "search";
+
 export function App() {
   const { user, enabled: authEnabled } = useAuth();
   const t = useTracker(user);
   const theme = useTheme();
-  const [view, setView] = useState(location.hash === "#tracker" ? "tracker" : "search");
+  const [view, setView] = useState(viewFromHash);
   const [school, setSchool] = useState<School>(SCHOOLS[0]);
   const [schoolMsg, setSchoolMsg] = useState(schoolMsgFor(SCHOOLS[0]));
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
@@ -30,7 +33,7 @@ export function App() {
   const pending = useRef("");
 
   useEffect(() => {
-    const on = () => setView(location.hash === "#tracker" ? "tracker" : "search");
+    const on = () => { setView(viewFromHash()); scrollTo(0, 0); };
     addEventListener("hashchange", on); return () => removeEventListener("hashchange", on);
   }, []);
   useEffect(() => { if (user) setAuthOpen(false); }, [user]);
@@ -74,11 +77,12 @@ export function App() {
         <div className="top-inner">
           <a className="brand" href="#search" aria-label="StudentNest AI home">
             <svg viewBox="0 0 26 26" aria-hidden="true"><rect width="26" height="26" rx="7" fill="var(--blue)" /><path d="M6 13.5 13 7.5l7 6V19a1 1 0 0 1-1 1h-3.5v-4h-5v4H7a1 1 0 0 1-1-1z" fill="var(--blue-ink)" /></svg>
-            StudentNest <small>Off-campus housing for students</small>
+            <span className="brand-name">StudentNest</span> <small>Off-campus housing for students</small>
           </a>
           <nav className="nav" aria-label="Main">
             <a href="#search" aria-current={view === "search" ? "page" : undefined}>Search</a>
             <a href="#tracker" aria-current={view === "tracker" ? "page" : undefined}>Tracker<span className="count">{count}</span></a>
+            <a href="#guide" aria-current={view === "guide" ? "page" : undefined}>Guide</a>
           </nav>
           <div className="account">
             <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -101,7 +105,7 @@ export function App() {
         {view === "search" ? (
           <SearchView school={school} schoolMsg={schoolMsg} onSchoolInput={onSchoolInput} onSchoolCommit={onSchoolCommit} onPickSchool={pickSchool}
             filters={filters} setFilters={setFilters} tracker={t.tracker} onToggleSave={toggleSave} onPaste={openPaste} />
-        ) : (
+        ) : view === "guide" ? <GuideView /> : (
           <section>
             <div className="summary"><h1>Your tracker</h1>
               <p>Move each apartment along as you hear back, then compare them side by side.{!user && authEnabled ? " Sign in to keep this list on all your devices." : ""}</p></div>
