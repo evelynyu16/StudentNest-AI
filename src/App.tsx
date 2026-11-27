@@ -4,6 +4,7 @@ import { PasteDialog } from "./components/PasteDialog";
 import { SearchView } from "./components/SearchView";
 import { TrackerView } from "./components/TrackerView";
 import { signOut, useAuth } from "./hooks/useAuth";
+import { setTheme, useTheme } from "./hooks/useTheme";
 import { geocodeApi } from "./lib/api";
 import { hash } from "./lib/format";
 import { findSchool, GENERIC_HOODS, SCHOOLS, type School } from "./lib/schools";
@@ -19,6 +20,7 @@ const schoolMsgFor = (s: School) => ({
 export function App() {
   const { user, enabled: authEnabled } = useAuth();
   const t = useTracker(user);
+  const theme = useTheme();
   const [view, setView] = useState(location.hash === "#tracker" ? "tracker" : "search");
   const [school, setSchool] = useState<School>(SCHOOLS[0]);
   const [schoolMsg, setSchoolMsg] = useState(schoolMsgFor(SCHOOLS[0]));
@@ -79,6 +81,13 @@ export function App() {
             <a href="#tracker" aria-current={view === "tracker" ? "page" : undefined}>Tracker<span className="count">{count}</span></a>
           </nav>
           <div className="account">
+            <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              title={theme === "dark" ? "Light mode" : "Dark mode"}>
+              {theme === "dark"
+                ? <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="currentColor" /></svg>}
+            </button>
             {authEnabled ? (user
               ? <><span className="avatar" title={user.email || ""}>{(user.email || "?")[0].toUpperCase()}</span><button className="link-btn" onClick={() => signOut()}>Sign out</button></>
               : <button className="btn" onClick={() => setAuthOpen("")}>Sign in</button>)

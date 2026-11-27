@@ -1,5 +1,5 @@
 // Real travel times from each listing to campus, using the Google Routes API route matrix.
-import { json, readJson, requireUser } from "./_lib/http";
+import { json, readJson, requireUser } from "./_lib/http.js";
 
 type Mode = "transit" | "walking" | "bicycling";
 interface Body { origins: Array<{ id: string; lat: number; lng: number }>; dest: { lat: number; lng: number }; mode: Mode }

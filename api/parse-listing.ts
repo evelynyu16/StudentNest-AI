@@ -2,8 +2,8 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
-import { json, readJson, requireUser } from "./_lib/http";
-import { geocode } from "./geocode";
+import { json, readJson, requireUser } from "./_lib/http.js";
+import { geocode } from "./geocode.js";
 
 const ParsedListing = z.object({
   is_listing: z.boolean().describe("false if the text is not a rental listing at all"),

@@ -1,5 +1,5 @@
 // Turns a school name or address into coordinates with the Google Geocoding API.
-import { json, readJson, requireUser } from "./_lib/http";
+import { json, readJson, requireUser } from "./_lib/http.js";
 
 interface Body { query: string; near?: { lat: number; lng: number } }
 

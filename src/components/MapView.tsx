@@ -5,6 +5,7 @@ import { clamp, fmt, perPerson } from "../lib/format";
 import { toXY } from "../lib/geo";
 import type { School } from "../lib/schools";
 import type { Listing } from "../lib/types";
+import { useTheme } from "../hooks/useTheme";
 
 const MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY as string | undefined;
 const MAP_ID = (import.meta.env.VITE_GOOGLE_MAP_ID as string | undefined) || "DEMO_MAP_ID";
@@ -26,9 +27,11 @@ export function MapView(props: Props) {
 }
 
 function GoogleMapView({ school, list, highlighted, onPick }: Props) {
+  // Google only reads colorScheme when the map is created, so remount the map when the theme changes.
+  const theme = useTheme();
   return (
     <APIProvider apiKey={MAPS_KEY!}>
-      <Map key={school.key} defaultCenter={{ lat: school.lat, lng: school.lng }} defaultZoom={13} mapId={MAP_ID}
+      <Map key={school.key + theme} colorScheme={theme === "dark" ? "DARK" : "LIGHT"} defaultCenter={{ lat: school.lat, lng: school.lng }} defaultZoom={13} mapId={MAP_ID}
         gestureHandling="cooperative" style={{ width: "100%", aspectRatio: "7 / 6" }} disableDefaultUI={false} streetViewControl={false}>
         <FitBounds school={school} list={list} />
         <AdvancedMarker position={{ lat: school.lat, lng: school.lng }} title={school.short} zIndex={1000}>
